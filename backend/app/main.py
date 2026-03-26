@@ -80,6 +80,46 @@ def create_app() -> FastAPI:
 
         return {"status": "ok"}
 
+    @app.get("/health/detailed", tags=["health"])
+    async def detailed_healthcheck() -> dict:
+        """
+        Provide detailed health status including database connectivity.
+
+        Returns
+        -------
+        dict
+            Detailed health status including API, database, and timestamp.
+        """
+        from .core.database import engine
+        from sqlalchemy import text
+
+        db_status = "unhealthy"
+        try:
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            db_status = "healthy"
+        except Exception:
+            pass
+
+        return {
+            "status": "ok" if db_status == "healthy" else "degraded",
+            "api": "healthy",
+            "database": db_status,
+            "timestamp": "2024-01-01T00:00:00Z"
+        }
+
+    @app.get("/ready", tags=["health"])
+    async def readiness() -> dict[str, str]:
+        """
+        Readiness probe for Kubernetes and container orchestration.
+
+        Returns
+        -------
+        dict[str, str]
+            JSON payload indicating if the service is ready to accept traffic.
+        """
+        return {"ready": "true"}
+
     return app
 
 

@@ -59,6 +59,78 @@ uvicorn backend.app.main:app --reload
 The service listens on `http://127.0.0.1:8000` by default. OpenAPI
 documentation is available at `http://127.0.0.1:8000/docs`.
 
+### API Testing Examples
+
+#### Testing with curl
+
+```bash
+# Test the health endpoint
+curl http://127.0.0.1:8000/health
+
+# Get all projects
+curl http://127.0.0.1:8000/api/v1/projects/
+
+# Create a new project
+curl -X POST http://127.0.0.1:8000/api/v1/projects/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Campus Network Upgrade",
+    "description": "Upgrade of campus network infrastructure",
+    "status": "planning",
+    "budget": 50000.00,
+    "start_date": "2024-01-01",
+    "end_date": "2024-12-31"
+  }'
+
+# Get all resources
+curl http://127.0.0.1:8000/api/v1/resources/
+
+# Create a new resource
+curl -X POST http://127.0.0.1:8000/api/v1/resources/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Main Router",
+    "resource_type": "network",
+    "status": "active"
+  }'
+
+# Get all locations
+curl http://127.0.0.1:8000/api/v1/locations/
+
+# Create a new maintenance ticket
+curl -X POST http://127.0.0.1:8000/api/v1/maintenance-tickets/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Router not responding",
+    "description": "Main router not responding to ping requests",
+    "priority": "high",
+    "status": "open"
+  }'
+
+# Get all sensor sites
+curl http://127.0.0.1:8000/api/v1/sensor-sites/
+```
+
+#### Testing with Pagination and Search
+
+```bash
+# Get first 10 projects
+curl "http://127.0.0.1:8000/api/v1/projects/?limit=10&offset=0"
+
+# Search for projects by name
+curl "http://127.0.0.1:8000/api/v1/projects/?search=campus"
+
+# Get resources with pagination
+curl "http://127.0.0.1:8000/api/v1/resources/?limit=20&offset=0"
+```
+
+#### Using the Interactive Swagger UI
+
+1. Start the server: `uvicorn backend.app.main:app --reload`
+2. Open your browser to: http://127.0.0.1:8000/docs
+3. Click on any endpoint to expand it
+4. Click "Try it out" to test the endpoint directly in your browser
+
 ### Core Endpoints
 
 | Entity | Base Path | Notes |
